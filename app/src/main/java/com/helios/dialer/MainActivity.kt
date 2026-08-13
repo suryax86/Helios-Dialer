@@ -50,7 +50,7 @@ import com.helios.dialer.data.repository.RecentsRepository
 import com.helios.dialer.service.CallManager
 import com.helios.dialer.ui.screens.contacts.ContactsScreen
 import com.helios.dialer.ui.screens.incall.InCallScreen
-import com.helios.dialer.ui.screens.keypad.KeypadScreen
+import com.helios.dialer.ui.screens.keypad.KeypadScreenScreen
 import com.helios.dialer.ui.screens.recents.RecentsScreen
 import com.helios.dialer.ui.screens.settings.SettingsScreen
 import com.helios.dialer.ui.theme.HeliosTheme

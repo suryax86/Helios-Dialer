@@ -73,7 +73,7 @@ fun KeypadScreen(
 
         AnimatedContent(
             targetState = number,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            
             label = "number_display"
         ) { value ->
             Box(

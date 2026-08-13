@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Keypad
+import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Settings
@@ -207,7 +207,7 @@ private fun HeliosRoot(
                     NavigationBarItem(
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
-                        icon = { Icon(Icons.Filled.Keypad, contentDescription = "Keypad") },
+                        icon = { Icon(Icons.Filled.Dialpad, contentDescription = "Keypad") },
                         label = { Text("Keypad") }
                     )
                     NavigationBarItem(

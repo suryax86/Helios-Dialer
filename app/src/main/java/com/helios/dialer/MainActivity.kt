@@ -132,6 +132,14 @@ private fun HeliosRoot(
         }
     }
 
+    var dataPermissionVersion by remember { mutableIntStateOf(0) }
+
+    val dataPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        dataPermissionVersion++
+    }
+
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
@@ -141,19 +149,48 @@ private fun HeliosRoot(
     }
 
     LaunchedEffect(Unit) {
+        val permissions = buildList {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.READ_CALL_LOG
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                add(Manifest.permission.READ_CALL_LOG)
+            }
+
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.READ_CONTACTS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                add(Manifest.permission.READ_CONTACTS)
+            }
+        }
+
+        if (permissions.isNotEmpty()) {
+            dataPermissionLauncher.launch(permissions.toTypedArray())
+        }
+
         if (Build.VERSION.SDK_INT >= 33 &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
-    LaunchedEffect(selectedTab) {
+    LaunchedEffect(selectedTab, dataPermissionVersion) {
         defaultDialer = isDefaultDialer(context)
-        when (selectedTab) {
-            1 -> recents = runCatching { RecentsRepository(context).getRecents() }.getOrDefault(emptyList())
-            2 -> contacts = runCatching { ContactsRepository(context).getContacts() }.getOrDefault(emptyList())
-        }
+
+        recents = runCatching {
+            RecentsRepository(context).getRecents()
+        }.getOrDefault(emptyList())
+
+        contacts = runCatching {
+            ContactsRepository(context).getContacts()
+        }.getOrDefault(emptyList())
     }
 
     LaunchedEffect(activeCall) {
@@ -230,7 +267,12 @@ private fun HeliosRoot(
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (selectedTab) {
-                0 -> KeypadScreen(initialNumber = initialNumber, onCall = callNumber)
+                0 -> KeypadScreen(
+                    initialNumber = initialNumber,
+                    recents = recents,
+                    contacts = contacts,
+                    onCall = callNumber
+                )
                 1 -> RecentsScreen(recents = recents, onCall = callNumber)
                 2 -> ContactsScreen(allContacts = contacts, onCall = callNumber)
                 3 -> SettingsScreen(onBack = { selectedTab = 0 }, defaultDialer = defaultDialer, onSetDefaultDialer = onRequestDefaultDialer)
